@@ -66,10 +66,14 @@ class Creativestyle_Richsnippets_Block_Jsonld extends Mage_Core_Block_Template
                         foreach ($r->getRatingVotes() as $vote) {
                             $ratings[] = $vote->getPercent();
                         }
-
-                        $avg = array_sum($ratings) / count($ratings);
-                        $avg = number_format(floor(($avg / 20) * 2) / 2, 1); // average rating (1-5 range)
-
+			
+                        $avgdata = array_sum($ratings) / count($ratings);
+                        $avgdata = number_format(floor(($avgdata / 20) * 2) / 2, 1); // average rating (1-5 range)
+			$avg[] = array(
+                            '@type' => 'Rating',
+                            'ratingValue' => $avgdata
+                            );
+                            
                         $datePublished = explode(' ', $r->getCreatedAt());
 
                         // another "mini-array" with schema data
