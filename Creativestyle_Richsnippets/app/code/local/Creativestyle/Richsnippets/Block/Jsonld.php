@@ -66,10 +66,14 @@ class Creativestyle_Richsnippets_Block_Jsonld extends Mage_Core_Block_Template
                         foreach ($r->getRatingVotes() as $vote) {
                             $ratings[] = $vote->getPercent();
                         }
-
-                        $avg = array_sum($ratings) / count($ratings);
-                        $avg = number_format(floor(($avg / 20) * 2) / 2, 1); // average rating (1-5 range)
-
+			
+                        $avgdata = array_sum($ratings) / count($ratings);
+                        $avgdata = number_format(floor(($avgdata / 20) * 2) / 2, 1); // average rating (1-5 range)
+			$avg[] = array(
+                            '@type' => 'Rating',
+                            'ratingValue' => $avgdata
+                            );
+                            
                         $datePublished = explode(' ', $r->getCreatedAt());
 
                         // another "mini-array" with schema data
@@ -90,6 +94,13 @@ class Creativestyle_Richsnippets_Block_Jsonld extends Mage_Core_Block_Template
                 $json['review'] = $reviewData;
             }
 
+            //use Desc if Shortdesc not work
+            if( $product->getShortDescription() ) {
+            	$descsnippet = html_entity_decode(strip_tags($product->getShortDescription()));
+			} else {
+				$descsnippet = Mage::helper('core/string')->substr(html_entity_decode(strip_tags($product->getDescription())), 0, 165);
+			}
+
             // Final array with all basic product data
             $data = array(
                 '@context' => 'http://schema.org',
@@ -98,7 +109,8 @@ class Creativestyle_Richsnippets_Block_Jsonld extends Mage_Core_Block_Template
                 'sku' => $product->getSku(),
                 'image' => $product->getImageUrl(),
                 'url' => $product->getProductUrl(),
-                'description' => trim(preg_replace('/\s+/', ' ', $this->stripTags($product->getShortDescription()))),
+                //'description' => trim(preg_replace('/\s+/', ' ', $this->stripTags($product->getShortDescription()))),
+                'description' => $descsnippet, //use Desc if Shortdesc not work
                 'offers' => array(
                     '@type' => 'Offer',
                     'availability' => $json['availability'],
