@@ -63,6 +63,7 @@ class Creativestyle_Richsnippets_Block_Jsonld extends Mage_Core_Block_Template
                 $reviewData = array();
                 if (count($reviews) > 0) {
                     foreach ($reviews as $r) {
+                        $ratings = array();
                         foreach ($r->getRatingVotes() as $vote) {
                             $ratings[] = $vote->getPercent();
                         }
