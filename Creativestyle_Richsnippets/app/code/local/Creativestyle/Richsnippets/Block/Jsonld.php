@@ -63,6 +63,7 @@ class Creativestyle_Richsnippets_Block_Jsonld extends Mage_Core_Block_Template
                 $reviewData = array();
                 if (count($reviews) > 0) {
                     foreach ($reviews as $r) {
+                        $ratings = array();
                         foreach ($r->getRatingVotes() as $vote) {
                             $ratings[] = $vote->getPercent();
                         }
@@ -83,13 +84,16 @@ class Creativestyle_Richsnippets_Block_Jsonld extends Mage_Core_Block_Template
                             'datePublished' => str_replace('/', '-', $datePublished[0]),
                             'name' => $this->htmlEscape($r->getTitle()),
                             'reviewBody' => nl2br($this->escapeHtml($r->getDetail())),
-                            'reviewRating' => $avg
+                            'reviewRating' => array(
+                                '@type'       => 'Rating',
+                                'ratingValue' => $avg
+                            )
                         );
                     }
                 }
 
                 // let's put review data into $json array
-                $json['reviewCount'] = $reviewSummary->getTotalReviews($product->getId());
+                $json['reviewCount'] = $reviewSummary->getTotalReviews($product->getId(), true);
                 $json['ratingValue'] = number_format(floor(($ratingData['rating_summary'] / 20) * 2) / 2, 1); // average rating (1-5 range)
                 $json['review'] = $reviewData;
             }
